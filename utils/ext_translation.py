@@ -29,7 +29,7 @@ def mp4_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['applications/ffmpeg/bin/ffmpeg.exe', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
+        ['ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
     )
     return wav_filepath
     
