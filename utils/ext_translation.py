@@ -12,7 +12,7 @@ def get_filename(filepath):
     if os.path.isfile(wav_filepath):
         os.remove(wav_filepath)
     
-    return os.path.join('tmp', filename + '.wav')
+    return os.path.abspath(os.path.join('tmp', filename + '.wav'))
 
 
 def mp3_translate(filepath):
@@ -20,8 +20,8 @@ def mp3_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['ffmpeg', '-i', filepath, wav_filepath])
-    
+        ['ffmpeg', '-i', filepath, wav_filepath]
+    )
     return wav_filepath
     
 def mp4_translate(filepath):

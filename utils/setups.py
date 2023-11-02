@@ -21,6 +21,3 @@ def set_webhook(url):
 
 def setup_tg():
     set_webhook(start_ngrok())    
-
-if __name__ == '__main__':
-    setup_tg()
