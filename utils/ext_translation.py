@@ -1,5 +1,4 @@
 from config import FRAMERATE 
-from pydub import AudioSegment
 import shutil
 import subprocess
 import os
@@ -20,8 +19,8 @@ def mp3_translate(filepath):
     
     wav_filepath = get_filename(filepath)
     
-    sound = AudioSegment.from_mp3(filepath)
-    sound.export(wav_filepath, format="wav")
+    subprocess.run(
+        ['ffmpeg', '-i', filepath, wav_filepath])
     
     return wav_filepath
     
