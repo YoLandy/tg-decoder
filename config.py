@@ -4,7 +4,7 @@ FRAMERATE = 16000
 DIARIZATION_ACCESS_TOKEN = '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'
 CUDA = False
 
-POSSIBLE_TYPES = ['video', 'audio']
+POSSIBLE_TYPES = ['video', 'audio', 'document']
 POSSIBLE_EXTENTIONS = ['mp4', 'mp3', 'wav']
 
 
