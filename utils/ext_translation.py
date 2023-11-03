@@ -20,7 +20,7 @@ def mp3_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['ffmpeg', '-i', filepath, wav_filepath]
+        ['../ffmpeg/ffmpeg', '-i', filepath, wav_filepath]
     )
     return wav_filepath
     
@@ -28,7 +28,7 @@ def mp4_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
+        ['../ffmpeg/ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
     )
     return wav_filepath
     
