@@ -1,7 +1,5 @@
 from pyannote.audio import Pipeline
 import torch
-import time
-import numpy as np
 
 from config import DIARIZATION_ACCESS_TOKEN, CUDA
 
@@ -113,3 +111,10 @@ class Diarizator():
                 fixed_segs[i][0][1] = min(segment[0][1], segs[i+1][0][0])
             
         return fixed_segs
+
+''' 
+if __name__ == '__main__':
+    dr = Diarizator(r'C:\Users\koval\OneDrive\Документы\GitHub\tg-decoder\tmp\file_46.wav')
+    data = dr.render()
+    print(data)
+'''

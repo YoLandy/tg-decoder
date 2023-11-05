@@ -1,4 +1,3 @@
-import numpy as np
 from pydub import AudioSegment
 import os
 import shutil
@@ -36,3 +35,22 @@ class WavSplitter():
             filenames_speakers.append((chunk_path, speaker))
         
         return filenames_speakers
+<<<<<<< Updated upstream
+=======
+
+"""
+if __name__ == '__main__':
+    import numpy as np
+    data = np.array(
+        [
+            [[0.008488964346349746, 3.505942275042445], 'SPEAKER_01'], 
+            [[3.505942275042445, 7.631578947368421], 'SPEAKER_00'], 
+            [[7.631578947368421, 9.193548387096776], 'SPEAKER_01'],
+            [[9.193548387096776, 13.098471986417659], 'SPEAKER_00']
+        ], dtype=object
+    )
+    
+    splitter = WavSplitter(r'C:\Users\koval\OneDrive\Документы\GitHub\tg-decoder\tmp\file_46.wav')
+    print(splitter.render(data)
+"""
+>>>>>>> Stashed changes

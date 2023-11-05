@@ -18,6 +18,11 @@ def _make_request(method, param_name=None, param_val=None, req_type='POST', data
     resp = req[req_type](url, data=data)    
     return resp
 
+def _download_request(filepath):
+    url = f'https://api.telegram.org/file/bot{TELEGRAM_TOKEN}/{filepath}'
+    print(url)
+    return req['GET'](url)
+
 
 def _get_filepath_and_name(json_data) -> tuple:
     filepath = json_data['result']['file_path']
@@ -36,12 +41,13 @@ def get_file(file_id):
         param_val=file_id
     )
     
+    print(resp.json())
+
     file_path, file_name = _get_filepath_and_name(resp.json())
     
-    resp = _make_request(
-        req_type='POST',
-        method=file_path,
-    )
+    print(file_path, file_name)
+
+    resp = _download_request(file_path)
 
     return resp, file_name
 

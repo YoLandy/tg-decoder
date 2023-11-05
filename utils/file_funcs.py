@@ -7,4 +7,3 @@ def save_file(responce, file_name):
         file.write(responce.content)
     
     return filepath
-

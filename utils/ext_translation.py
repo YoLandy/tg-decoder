@@ -1,4 +1,5 @@
 from config import FRAMERATE 
+from pydub import AudioSegment
 import shutil
 import subprocess
 import os
@@ -20,15 +21,16 @@ def mp3_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['../ffmpeg/ffmpeg', '-i', filepath, wav_filepath]
+        ['ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
     )
+
     return wav_filepath
     
 def mp4_translate(filepath):
     wav_filepath = get_filename(filepath)
     
     subprocess.run(
-        ['../ffmpeg/ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
+        ['ffmpeg', '-i', filepath, '-acodec', 'pcm_s16le', '-ar', '16000', wav_filepath]
     )
     return wav_filepath
     
@@ -43,3 +45,8 @@ translators = {
     '.wav': copy,
     '.mp4': mp4_translate
 }    
+
+
+if __name__ == '__main__':
+    filepath = r'C:\Users\koval\Downloads\file_43.mp3'
+    print(translators['.mp3'](filepath))

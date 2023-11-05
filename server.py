@@ -26,10 +26,13 @@ def receive_update():
         if not file_id:
             send_message(chat_id, UNSUPPORTED_TYPE_MESSAGE)
             return {"ok": True}
+        
+        print('1')    
+        
         print('1') 
         send_message(chat_id, DOWNLOAD_FILE_MESSAGE)
-        
-        resp, filename = get_file(file_id)
+
+        resp, filename = get_file(file_id)        
         
         filepath = save_file(resp, filename)
         
