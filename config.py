@@ -2,7 +2,8 @@ import os
 
 FRAMERATE = 16000
 DIARIZATION_ACCESS_TOKEN = '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'
-CUDA = False
+CUDA = True
+MODEL_TYPE = 'large'
 
 POSSIBLE_TYPES = ['video', 'audio', 'document']
 POSSIBLE_EXTENTIONS = ['mp4', 'mp3', 'wav']
