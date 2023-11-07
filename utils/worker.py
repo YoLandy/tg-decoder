@@ -12,7 +12,8 @@ import os
 model = Whisper_short()
 
 class Worker():
-    def __init__(self, request_json):
+    def __init__(self, request_json, lock):
+        self.lock = lock
         self.chat_id = request_json["message"]["chat"]["id"]
         print(self.chat_id)
         self.request_json = request_json
@@ -32,8 +33,12 @@ class Worker():
             print('diarization')
             data = self.split_wav_file(filepath, data)
             print('transcribe')
+
+            self.lock.acquire()
             self.transcribe(data)
             self.is_running = False
+            self.lock.release()
+
         except Exception as e:
             self.send_message(str(e))
             self.is_running = False
@@ -84,7 +89,7 @@ class Worker():
 
         text = []
         for i, [filepath, speaker] in enumerate(data):
-            self.send_message(f'Транскрибировано примерно {int(100 * i / len(data))}%')
+            self.send_message(f'Транскрибировано примерно {100 * i / len(data)}%')
             text.append((model(filepath), speaker))
 
         self.send_message('Готово')

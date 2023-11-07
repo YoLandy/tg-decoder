@@ -2,11 +2,12 @@ from utils.worker import Worker
 from utils.setups import setup_tg
 from utils.tg_requests import send_message
 from flask import Flask, request
-import threading
+from threading import Thread, Semaphore
 
 from config import UNSUPPORTED_TYPE_MESSAGE, DOWNLOAD_FILE_MESSAGE
 
 app = Flask(__name__)
+s = Semaphore()
 
 def apdate_workers(workers):
     for i, worker in enumerate(workers):
@@ -26,9 +27,9 @@ def receive_update():
             send_message(chat_id, f'Перед вами в очереди {worker_num} человек')
             
         if chat_id not in [work.chat_id for work in workers]:
-            worker = Worker(request.json)
+            worker = Worker(request.json, s)
             workers.append(worker)
-            thread = threading.Thread(target=worker.render)
+            thread = Thread(target=worker.render)
             thread.start()
 
     return {"ok": True}
