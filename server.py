@@ -35,4 +35,4 @@ def receive_update():
 
 if __name__ == '__main__':
     setup_tg()
-    app.run(debug=True)
+    app.run(debug=False)
