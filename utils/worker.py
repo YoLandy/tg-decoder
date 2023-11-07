@@ -16,19 +16,27 @@ class Worker():
         self.chat_id = request_json["message"]["chat"]["id"]
         print(self.chat_id)
         self.request_json = request_json
+        self.is_running = False
 
     def render(self):
-        filepath = self.download_file()          
-        if not filepath:
-            return False
+        try:
+            self.is_running = True
+            filepath = self.download_file()          
+            if not filepath:
+                self.is_running = False
+                return False
         
-        filepath = self.to_wav_file(filepath)
+            filepath = self.to_wav_file(filepath)
 
-        data = self.diarization(filepath)
-        print('diarization')
-        data = self.split_wav_file(filepath, data)
-        print('transcribe')
-        self.transcribe(data)
+            data = self.diarization(filepath)
+            print('diarization')
+            data = self.split_wav_file(filepath, data)
+            print('transcribe')
+            self.transcribe(data)
+            self.is_running = False
+        except Exception as e:
+            self.send_message(str(e))
+            self.is_running = False
 
     def download_file(self):
         file_id = get_file_id(self.request_json)
