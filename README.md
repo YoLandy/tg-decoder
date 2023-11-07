@@ -1,2 +1,8 @@
 # tg-decoder
- audio video to text bot
+ audio and video decode
+# Installation
+ - make shure you have CUDA12
+ - Python 3.11
+```
+pip install -r requirements.txt
+```
