@@ -73,3 +73,11 @@ def get_file_id(json_data):
                 return file_id
             
     return False
+
+def telegram_bot_send_document(filepath, chat_id):
+    file = open(filepath, 'rb')
+    send_document = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendDocument?chat_id={chat_id}&multipart/form-data={str(file.read())}'
+
+    r = requests.post(send_document)
+
+    return r.json()

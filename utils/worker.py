@@ -1,5 +1,5 @@
 from flask import Flask, request
-from utils.tg_requests import send_message, get_file, get_file_id
+from utils.tg_requests import send_message, get_file, get_file_id, telegram_bot_send_document
 from utils.setups import setup_tg
 from utils.file_funcs import save_file
 from utils.ext_translation import translators
@@ -35,7 +35,14 @@ class Worker():
             print('transcribe')
 
             self.lock.acquire()
-            self.transcribe(data)
+            text = self.transcribe(data)
+
+            filepath = filepath[:-4] + '.txt'
+            with open(filepath, "w") as file:
+                file.write(text)
+                
+            telegram_bot_send_document(self.chat_id, filepath)
+            
             self.is_running = False
             self.lock.release()
 
@@ -93,7 +100,7 @@ class Worker():
             text.append((model(filepath), speaker))
 
         self.send_message('Готово')
-        self.send_message(str(text))
+        return str(text)
 
 
     def send_message(self, text):
