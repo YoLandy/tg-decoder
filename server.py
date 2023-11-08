@@ -4,7 +4,7 @@ from utils.tg_requests import send_message
 from flask import Flask, request
 from threading import Thread, Semaphore
 
-from config import UNSUPPORTED_TYPE_MESSAGE, DOWNLOAD_FILE_MESSAGE
+from config import START_MESSAGE, QUEUE_MESSAGE
 
 app = Flask(__name__)
 s = Semaphore()
@@ -21,10 +21,15 @@ workers = []
 def receive_update():
     if request.method == "POST":
         chat_id = request.json["message"]["chat"]["id"]
+    
+        if 'text' in request.json["message"] and request.json["message"]['text'] == '/start':
+            send_message(chat_id, START_MESSAGE)
+            return {"ok": True}
+        
         worker_num = apdate_workers(workers)
         if worker_num:
             print(worker_num)
-            send_message(chat_id, f'Перед вами в очереди {worker_num} человек')
+            send_message(chat_id, QUEUE_MESSAGE(worker_num))
             
         if chat_id not in [work.chat_id for work in workers]:
             worker = Worker(request.json, s)

@@ -1,12 +1,12 @@
 from flask import Flask, request
-from utils.tg_requests import send_message, get_file, get_file_id, telegram_bot_send_document
-from utils.setups import setup_tg
+from utils.tg_requests import send_message, get_file, get_file_id, send_document
+from utils.file_funcs import save_to_txt
 from utils.file_funcs import save_file
 from utils.ext_translation import translators
 from utils.diarization import Diarizator
 from utils.wav_splitter import WavSplitter
 from utils.whisper_short import Whisper_short
-from config import UNSUPPORTED_TYPE_MESSAGE, DOWNLOAD_FILE_MESSAGE
+from config import UNSUPPORTED_TYPE_MESSAGE, DOWNLOAD_FILE_MESSAGE, SETUP_DIARIZATOR_MESSAGE, RUN_DIARIZATOR_MESSAGE, RUN_WAV_SPLITTER_MESSAGE, START_TRANSCRIBATION_MESSAGE, TRANSCRIBATION_PROGRESS_MESSAGE, DONE_MESSAGE
 import os
 
 model = Whisper_short()
@@ -35,20 +35,18 @@ class Worker():
             print('transcribe')
 
             self.lock.acquire()
-            text = self.transcribe(data)
 
-            filepath = filepath[:-4] + '.txt'
-            with open(filepath, "w") as file:
-                file.write(text)
-                
-            telegram_bot_send_document(self.chat_id, filepath)
-            
+            text_list = self.transcribe(data)
+
+            self.send_txt(filepath, text_list)
             self.is_running = False
+
             self.lock.release()
 
         except Exception as e:
             self.send_message(str(e))
             self.is_running = False
+            raise e
 
     def download_file(self):
         file_id = get_file_id(self.request_json)
@@ -73,34 +71,44 @@ class Worker():
         return filepath
 
     def diarization(self, filepath):
-        self.send_message('Загружаем для разбиения по спикерам') 
+        self.send_message(SETUP_DIARIZATOR_MESSAGE) 
 
         diarizator = Diarizator(filepath)
-        self.send_message('Запускаем разбиение по спикерам') 
+        self.send_message(RUN_DIARIZATOR_MESSAGE) 
 
         data = diarizator.render()
         return data
     
     def split_wav_file(self, filepath, data):
-        self.send_message('В процессе разбиение по спикерам')
+        #self.send_message(SETUP_WAV_SPLITTER_MESSAGE)
 
         wav_splitter = WavSplitter(filepath)
 
-        self.send_message('Разбиваем по спикерам')
+        self.send_message(RUN_WAV_SPLITTER_MESSAGE)
 
         data = wav_splitter.render(data)
         return data
 
     def transcribe(self, data):
-        self.send_message('Начинаем транскрибацию')
+        self.send_message(START_TRANSCRIBATION_MESSAGE)
 
         text = []
         for i, [filepath, speaker] in enumerate(data):
-            self.send_message(f'Транскрибировано примерно {100 * i / len(data)}%')
+            status_bar = 100 * i / len(data)
+            self.send_message(TRANSCRIBATION_PROGRESS_MESSAGE(status_bar))
             text.append((model(filepath), speaker))
 
-        self.send_message('Готово')
-        return str(text)
+        self.send_message(DONE_MESSAGE)
+        return text
+
+    def send_txt(self, filepath, text_list):
+        dir, filename = os.path.split(filepath)
+        filename, ext = os.path.splitext(filename)
+        filename += '.txt'
+
+        text = '\n'.join([f'{speaker} : {replic}' for (replic, speaker) in text_list])
+
+        send_document(save_to_txt(text, filename), self.chat_id)
 
 
     def send_message(self, text):
