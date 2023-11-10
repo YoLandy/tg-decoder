@@ -4,7 +4,6 @@ import requests
 from config.config import TELEGRAM_TOKEN
 
 def start_ngrok():
-    from pyngrok import ngrok
     http_tunnel = ngrok.connect(
         addr="localhost:5000",
     )

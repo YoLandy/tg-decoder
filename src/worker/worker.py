@@ -29,17 +29,16 @@ class Worker():
         filepath = self.download()
         filepath = self.to_wav(filepath)
         
-        timeslices_by_speaker = self.diarization(filepath)
-
-        filepaths_speakers = self.split_wav(timeslices_by_speaker, filepath)
-
         self.lock.acquire()
-
+        
+        timeslices_by_speaker = self.diarization(filepath)
+        filepaths_speakers = self.split_wav(timeslices_by_speaker, filepath)
         text_list = self.transcribe(filepaths_speakers)
+        
+        self.lock.release()
 
         self.send_text(filepath, text_list)
 
-        self.lock.release()
         self.is_running = False
 
     def download(self):

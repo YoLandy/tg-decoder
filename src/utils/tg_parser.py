@@ -11,6 +11,10 @@ def get_fileid_and_ext(data):
     if 'voice' in data['message']:
         _, ext = data['message']['voice']['mime_type'].split('/')
         file_id = data['message']['voice']['file_id']
+
+        if ext == 'mpeg':
+            ext = 'mp3'
+        
         return file_id, ext
     
     types_ = ['document', 'audio', 'video']
