@@ -1,13 +1,15 @@
-import ngrok
+from pyngrok import ngrok
 import requests
 
-from config import TELEGRAM_TOKEN
+from config.config import TELEGRAM_TOKEN
 
 def start_ngrok():
-    listener = ngrok.connect(5000)
-    ngrok_url = listener.url()
-    print(ngrok_url)
-    return ngrok_url
+    from pyngrok import ngrok
+    http_tunnel = ngrok.connect(
+        addr="localhost:5000",
+    )
+    print(http_tunnel.public_url)
+    return http_tunnel.public_url
 
 
 def set_webhook(url):
@@ -20,4 +22,6 @@ def set_webhook(url):
     
 
 def setup_tg():
-    set_webhook(start_ngrok())    
+    set_webhook(start_ngrok())
+
+    

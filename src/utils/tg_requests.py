@@ -1,5 +1,5 @@
 import requests
-from config import TELEGRAM_TOKEN, POSSIBLE_EXTENTIONS, POSSIBLE_TYPES
+from config.config import TELEGRAM_TOKEN, POSSIBLE_EXTENTIONS, POSSIBLE_TYPES
 import os
 
 __all__ = ['get_file', 'send_message']

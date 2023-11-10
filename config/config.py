@@ -1,18 +1,31 @@
 import os
+from config.utils.ConfigExceptions import VarNotFoundException
+from config.utils.load_env import load_env
+
+load_env()
+
+try:
+    DIARIZATION_ACCESS_TOKEN = os.environ['DIARIZATION_ACCESS_TOKEN']
+except KeyError as e:
+    raise VarNotFoundException('DIARIZATION_ACCESS_TOKEN')
+
+try:
+    TELEGRAM_TOKEN = os.environ['TELEGRAM_TOKEN']
+except Exception as e:
+    raise VarNotFoundException('TELEGRAM_TOKEN')
 
 FRAMERATE = 16000
-DIARIZATION_ACCESS_TOKEN = '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'
-CUDA = True
-MODEL_TYPE = 'large'
+
+CUDA = False
+MODEL_TYPE = 'tiny'
 
 POSSIBLE_TYPES = ['video', 'audio', 'document']
-POSSIBLE_EXTENTIONS = ['mp4', 'mp3', 'wav']
+POSSIBLE_EXTENTIONS = ['mp4', 'mp3', 'wav', 'ogg']
 
 
-DOWNLOAD_FOLDER = os.path.abspath('downloads')
-TMP_FOLDER = os.path.abspath('tmp')
+DOWNLOAD_FOLDER = os.path.abspath('data/files/downloads')
+TMP_FOLDER = os.path.abspath('data/files/tmp')
 
-TELEGRAM_TOKEN = '6611573360:AAEq0QhjF_OuBCCM5H3qAiif0ox7XCcgmxo'
 UNSUPPORTED_TYPE_MESSAGE = f'Извините, но бот принимает только {" .".join(POSSIBLE_EXTENTIONS)} файлы'
 DOWNLOAD_FILE_MESSAGE= 'Загружаем данные на сервер'
 START_MESSAGE = "Это транскрибатор бот. Отправь файл .mp3, .mp4 или .wav не больше 20мб и я его транскрибирую. Ты можешь оказаться в очереди на транскрибацию, тогда этот процесс займет некоторое время. Наберись терпения и дождись результата"

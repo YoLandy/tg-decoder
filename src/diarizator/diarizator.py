@@ -1,7 +1,7 @@
 from pyannote.audio import Pipeline
 import torch
 
-from config import DIARIZATION_ACCESS_TOKEN, CUDA
+from config.config import DIARIZATION_ACCESS_TOKEN, CUDA
 
 pipeline = Pipeline.from_pretrained(
     "pyannote/speaker-diarization-3.0",
