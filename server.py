@@ -29,8 +29,8 @@ def receive_update():
             }
             schedule.add(task)
 
-        if len(schedule.get_active_workers())- 1:
-            send_message(chat_id, f'Перед вами в очереди {len(schedule.get_active_workers()) - 1} человек')
+            if len(schedule.get_active_workers())- 1:
+                send_message(chat_id, f'Перед вами в очереди {len(schedule.get_active_workers()) - 1} человек')
 
 
     return {"ok": True}
