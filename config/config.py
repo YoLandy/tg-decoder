@@ -16,8 +16,8 @@ except Exception as e:
 
 FRAMERATE = 16000
 
-CUDA = False
-MODEL_TYPE = 'tiny'
+CUDA = True
+MODEL_TYPE = 'large'
 
 POSSIBLE_TYPES = ['video', 'audio', 'document']
 POSSIBLE_EXTENTIONS = ['mp4', 'mp3', 'wav', 'ogg']
