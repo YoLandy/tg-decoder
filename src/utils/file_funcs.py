@@ -11,7 +11,7 @@ def save_file(responce, file_name):
 def save_to_txt(text, file_name):
     filepath = os.path.join(TMP_FOLDER, file_name)
     
-    with open(filepath, "w") as file:
+    with open(filepath, "w", encoding="utf-8") as file:
             file.write(text)
 
     return open(filepath, 'rb')

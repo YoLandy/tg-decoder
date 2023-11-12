@@ -1,19 +1,46 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import torch
 import whisper
 from config.config import CUDA, MODEL_TYPE
+import whisper.transcribe
+import sys
+import tqdm
+from src.utils.tg_requests import send_message
+
+
+class _CustomProgressBar(tqdm.tqdm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._current = self.n  # Set the initial value
+    def update(self, n):
+        super().update(n)
+        self._current += n
+        message = f"Обработано примерно {round(self._current*100/self.total)}%"
+        #send_message(self.chat_id, message)
+        print(message)
 
 class Whisper():
     def __init__(self):
         self.device = torch.device("cuda" if CUDA else "cpu")
         self.model = whisper.load_model(MODEL_TYPE, device=self.device)
-        self.model.to(self.device)
+        #self.model.to(self.device)
 
-    def __call__(self, audio_path, speakers=False):
+    def __call__(self, audio_path, chat_id):
+        transcribe_module = sys.modules['whisper.transcribe']
+        transcribe_module.tqdm.tqdm = _CustomProgressBar
+        #transcribe_module.tqdm.tqdm.chat_id = chat_id
 
         with torch.no_grad():
-            preds = self.model.transcribe(audio_path)
+            preds = self.model.transcribe(audio_path,
+                                          language='ru',
+                                          verbose=None)
+        out_text = self.postprocess(preds)
+        return out_text
 
-        return preds['text']
+    def postprocess(self, preds):
+        text_with_time = []
+        for segment in preds['segments']:
+            start = segment['start']
+            end = segment['end']
+            txt = segment['text']
+            text_with_time.append([[start, end], txt])
+        return text_with_time
