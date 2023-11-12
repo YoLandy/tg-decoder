@@ -1,6 +1,5 @@
 import openai
 
-API_KEY = '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'
 MODEL = "gpt-3.5-turbo-1106"
 MAX_SYMBOLS = 15000
 
