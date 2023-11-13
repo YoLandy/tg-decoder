@@ -14,6 +14,11 @@ try:
 except Exception as e:
     raise VarNotFoundException('TELEGRAM_TOKEN')
 
+try:
+    GPT_API_KEY = os.environ['GPT_API_KEY']
+except Exception as e:
+    raise VarNotFoundException('GPT_API_KEY')
+
 FRAMERATE = 16000
 
 CUDA = True

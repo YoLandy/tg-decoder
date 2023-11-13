@@ -1,10 +1,11 @@
 import openai
 
-API_KEY = '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'
+from config.config import GPT_API_KEY
+
 MODEL = "gpt-3.5-turbo-1106"
 MAX_SYMBOLS = 15000
 
-openai.api_key = API_KEY
+openai.api_key = GPT_API_KEY
 
 
 class Summarizer():

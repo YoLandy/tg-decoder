@@ -6,17 +6,19 @@ import sys
 import tqdm
 from src.utils.tg_requests import send_message
 
-
-class _CustomProgressBar(tqdm.tqdm):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._current = self.n  # Set the initial value
-    def update(self, n):
-        super().update(n)
-        self._current += n
-        message = f"Обработано примерно {round(self._current*100/self.total)}%"
-        #send_message(self.chat_id, message)
-        print(message)
+def make_progressbar(chat_id):
+    class _CustomProgressBar(tqdm.tqdm):
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self._current = self.n  # Set the initial value
+            self.chat_id = chat_id
+        def update(self, n):
+            super().update(n)
+            self._current += n
+            message = f"Обработано примерно {round(self._current*100/self.total)}%"
+            send_message(self.chat_id, message)
+            print(message)
+    return _CustomProgressBar
 
 class Whisper():
     def __init__(self):
@@ -26,6 +28,7 @@ class Whisper():
 
     def __call__(self, audio_path, chat_id):
         transcribe_module = sys.modules['whisper.transcribe']
+        _CustomProgressBar = make_progressbar(chat_id)
         transcribe_module.tqdm.tqdm = _CustomProgressBar
         #transcribe_module.tqdm.tqdm.chat_id = chat_id
 
