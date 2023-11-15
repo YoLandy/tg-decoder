@@ -10,8 +10,9 @@ openai.api_key = GPT_API_KEY
 
 class Summarizer():
     def __init__(self, combined_text):
-        self.texts = combined_text[:][0]
-        self.speakers = combined_text[:][1]
+        self.texts = [text for (text, speaker) in combined_text]
+        self.speakers = [speaker for (text, speaker) in combined_text]
+        
 
     def summarize(self):
         # change later !!!

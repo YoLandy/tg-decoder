@@ -27,28 +27,31 @@ class Worker():
         self.waver = Waver(self.ext)
 
     def run(self):
-        self.is_running = True
-        filepath = self.download()
-        filepath = self.to_wav(filepath)
+        try:
+            self.is_running = True
+            filepath = self.download()
+            filepath = self.to_wav(filepath)
         
-        self.lock.acquire()
+            self.lock.acquire()
         
-        timeslices_by_speaker = self.diarization(filepath)
-        text_with_time = self.transcribe(filepath)
-        combined_text = self.combine(timeslices_by_speaker, text_with_time)
+            timeslices_by_speaker = self.diarization(filepath)
+            text_with_time = self.transcribe(filepath)
+            combined_text = self.combine(timeslices_by_speaker, text_with_time)
         
-        self.lock.release()
+            text = '\n'.join([f'{speaker} : {replic}' for (replic, speaker) in combined_text])
+            self.send_text(filepath, text, summary=False)
 
-        text = '\n'.join([f'{speaker} : {replic}' for (replic, speaker) in combined_text])
-        self.send_text(filepath, text, summary=False)
+            summarized_text = self.summarize(combined_text)
+        
+            self.lock.release()
+        
+            print(summarized_text)
+            self.send_text(filepath, summarized_text, summary=True)
 
-        self.lock.acquire()
-        summarized_text = self.summarize(combined_text)
-        self.lock.release()
-        print(summarized_text)
-        self.send_text(filepath, summarized_text, summary=True)
-
-        self.is_running = False
+            self.is_running = False
+        except Exception as e:
+            self.is_running=False
+            raise e
 
     def summarize(self, combined_text):
         summarizer = Summarizer(combined_text)
@@ -90,8 +93,10 @@ class Worker():
     def send_text(self, filepath, text, summary=False):
         dir, filename = os.path.split(filepath)
         filename, ext = os.path.splitext(filename)
+        caption = 'Ваша полная транскрибация'
         if summary:
             filename += '_summary'
+            caption = 'Краткое резюме'
         filename += '.txt'
 
-        send_document(save_to_txt(text, filename), self.chat_id)
+        send_document(save_to_txt(text, filename), self.chat_id, caption)

@@ -7,10 +7,8 @@ pipeline = Pipeline.from_pretrained(
     "pyannote/speaker-diarization-3.0",
     use_auth_token=DIARIZATION_ACCESS_TOKEN)
 
-
 if CUDA:
     pipeline.to(torch.device("cuda"))
-
 
 class Diarizator():
     def __init__(self, filepath):

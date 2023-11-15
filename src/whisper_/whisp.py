@@ -12,12 +12,14 @@ def make_progressbar(chat_id):
             super().__init__(*args, **kwargs)
             self._current = self.n  # Set the initial value
             self.chat_id = chat_id
+
         def update(self, n):
             super().update(n)
             self._current += n
             message = f"Обработано примерно {round(self._current*100/self.total)}%"
             send_message(self.chat_id, message)
             print(message)
+            
     return _CustomProgressBar
 
 class Whisper():

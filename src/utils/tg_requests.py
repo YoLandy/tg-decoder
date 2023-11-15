@@ -74,12 +74,12 @@ def get_file_id(json_data):
             
     return False
 
-def send_document(filestream, chat_id):
+def send_document(filestream, chat_id, caption='This is your transcribation'):
     send_document = f'https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendDocument?'
     data = {
         'chat_id': chat_id,
         'parse_mode':'HTML',
-        'caption':'This is your transcribation'
+        'caption': caption
     }
     
     files = {
