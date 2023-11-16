@@ -41,12 +41,12 @@ class Worker():
             text = '\n'.join([f'{speaker} : {replic}' for (replic, speaker) in combined_text])
             self.send_text(filepath, text, summary=False)
 
-            summarized_text = self.summarize(combined_text)
+            #summarized_text = self.summarize(combined_text)
         
             self.lock.release()
         
-            print(summarized_text)
-            self.send_text(filepath, summarized_text, summary=True)
+            #print(summarized_text)
+            #self.send_text(filepath, summarized_text, summary=True)
 
             self.is_running = False
         except Exception as e:
