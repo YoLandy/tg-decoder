@@ -1,5 +1,6 @@
 import requests
 from config.config import TELEGRAM_TOKEN, POSSIBLE_EXTENTIONS, POSSIBLE_TYPES
+from src.utils.exceptions import TooBigFile
 import os
 
 __all__ = ['get_file', 'send_message']
@@ -41,7 +42,10 @@ def get_file(file_id):
         param_val=file_id
     )
     
-    print(resp.json())
+    if resp.json().get('error_code') == 400:
+        raise TooBigFile()
+    
+    print('a', resp.json())
 
     file_path, file_name = _get_filepath_and_name(resp.json())
     

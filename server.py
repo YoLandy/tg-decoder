@@ -7,6 +7,9 @@ from src.utils.message_answerer import answer_message
 from src.scheduler.scheduler import Scheduler
 from src.whisper_.whisp import Whisper
 
+import logging
+logging.basicConfig(level=logging.INFO, filename="py_log.log",filemode="w")
+
 model = Whisper()
 schedule = Scheduler(model)
 lock = Semaphore()
@@ -17,9 +20,12 @@ app = Flask(__name__)
 def receive_update():
     if request.method == "POST":
         chat_id = request.json["message"]["chat"]["id"]
-        print(request.json)
         
+        print(request.json)
+        logging.info(str(request.json))
+       
         file_id, ext = answer_message(request.json, chat_id)
+            
         if file_id and ext:
             task = {
                 'file_id': file_id,

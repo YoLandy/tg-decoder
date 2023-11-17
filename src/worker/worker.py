@@ -6,13 +6,16 @@ from src.combiner.combiner import Combiner
 from src.summarizer.summarizer import Summarizer
 from src.utils.tg_requests import send_message, send_document
 from src.utils.file_funcs import save_to_txt
+from src.utils.exceptions import TooBigFile
 
 from config.config import DOWNLOAD_FILE_MESSAGE, START_TRANSCRIBATION_MESSAGE, \
                           SETUP_DIARIZATOR_MESSAGE, RUN_DIARIZATOR_MESSAGE, \
                           TRANSCRIBATION_PROGRESS_MESSAGE, DONE_MESSAGE, \
-                          RUN_WAV_SPLITTER_MESSAGE
+                          RUN_WAV_SPLITTER_MESSAGE, TOO_BIG_FILE_ERROR_MESSAGE
 
 import os
+
+import logging
 
 class Worker():
     def __init__(self, task, model):
@@ -27,32 +30,64 @@ class Worker():
         self.waver = Waver(self.ext)
 
     def run(self):
+        
+        self.is_running = True
+        
         try:
-            self.is_running = True
             filepath = self.download()
             filepath = self.to_wav(filepath)
+        except TooBigFile as e:
+            self.is_running = False
+            send_message(self.chat_id, TOO_BIG_FILE_ERROR_MESSAGE)
+            print(str(e))
+            logging.info(self.chat_id, str(e))
+            return False
+
+        self.lock.acquire()
         
-            self.lock.acquire()
-        
+        try:
             timeslices_by_speaker = self.diarization(filepath)
-            text_with_time = self.transcribe(filepath)
-            combined_text = self.combine(timeslices_by_speaker, text_with_time)
+        except Exception as e:
+            send_message(self.chat_id, 'Что то пошло не так с диаризацией, попробуйте заново')
+            self.is_running = False
+            self.lock.release()
+            print(str(e))
+            logging.info(self.chat_id, str(e))
+            return False
         
+        try:
+            text_with_time = self.transcribe(filepath)
+        
+        except Exception as e:
+            send_message(self.chat_id, 'Что то пошло не так с транскрибацией, попробуйте заново')
+            self.is_running = False
+            self.lock.release()
+            print(str(e))
+            logging.info(self.chat_id, str(e))
+            return False
+        
+        try:
+            combined_text = self.combine(timeslices_by_speaker, text_with_time)
+    
             text = '\n'.join([f'{speaker} : {replic}' for (replic, speaker) in combined_text])
             self.send_text(filepath, text, summary=False)
 
-            #summarized_text = self.summarize(combined_text)
-        
-            self.lock.release()
-        
-            #print(summarized_text)
-            #self.send_text(filepath, summarized_text, summary=True)
-
-            self.is_running = False
+            summarized_text = self.summarize(combined_text)
+    
         except Exception as e:
-            self.is_running=False
-            raise e
+            self.is_running = False
+            self.lock.release()
+            send_message(self.chat_id, 'Что то пошло не так c суммаризацией, попробуйте заново')
+            print(str(e))
+            logging.info(self.chat_id, str(e))
+            return False
+        
+        self.lock.release()
+        print(summarized_text)
+        self.send_text(filepath, summarized_text, summary=True)
 
+        self.is_running = False
+        
     def summarize(self, combined_text):
         summarizer = Summarizer(combined_text)
         summary = summarizer.summarize()
