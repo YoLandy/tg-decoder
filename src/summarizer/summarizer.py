@@ -1,18 +1,22 @@
-import openai
+from config.config import SBER_API_KEY
 
-from config.config import GPT_API_KEY
+from langchain.schema import HumanMessage, SystemMessage
+from langchain.chat_models.gigachat import GigaChat
 
 MODEL = "gpt-3.5-turbo-1106"
 MAX_SYMBOLS = 15000
 
-openai.api_key = GPT_API_KEY
 
+system_prompt = '''Твоя задача выделить главную информацию из записи совещания. 
+            Эта информация должна быть удобным сокращением текста, который содержится в тройных кавычках.
+            Выдели несколько главных тезисов, которые обсуждались и перечисли их.
+            Постарайся сохранить важные детали.'''
 
 class Summarizer():
     def __init__(self, combined_text):
         self.texts = [text for (text, speaker) in combined_text]
         self.speakers = [speaker for (text, speaker) in combined_text]
-        
+        self.chat = GigaChat(credentials=SBER_API_KEY, verify_ssl_certs=False)        
 
     def summarize(self):
         # change later !!!
@@ -27,13 +31,7 @@ class Summarizer():
         result = []
 
         for text in texts:
-            prompt = f"""
-            Твоя задача выделить главную информацию из записи совещания. 
-            Эта информация должна быть удобным сокращением текста, который содержится в тройных кавычках.
-            Выдели несколько главных тезисов, которые обсуждались и перечисли их.
-            Постарайся сохранить важные детали.
-            Текст: ```{text}```
-            """
+            prompt = text
             try:
                 response = self.get_completion(prompt)
             except:
@@ -60,10 +58,8 @@ class Summarizer():
         return text
 
     def get_completion(self, prompt, model=MODEL):
-        messages = [{"role": "user", "content": prompt}]
-        response = openai.ChatCompletion.create(
-            model=model,
-            messages=messages,
-            # temperature =
-        )
-        return response.choices[0].message["content"]
+        messages = [SystemMessage(content=system_prompt)]
+        messages.append(HumanMessage(content=prompt))
+        
+        response = self.chat(messages)
+        return response.content

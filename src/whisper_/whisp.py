@@ -10,7 +10,7 @@ def make_progressbar(chat_id):
     class _CustomProgressBar(tqdm.tqdm):
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
-            self._current = self.n  # Set the initial value
+            self._current = 0 #self.n  # Set the initial value
             self.chat_id = chat_id
 
         def update(self, n):

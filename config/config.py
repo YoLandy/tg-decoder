@@ -15,9 +15,10 @@ except Exception as e:
     raise VarNotFoundException('TELEGRAM_TOKEN')
 
 try:
-    GPT_API_KEY = os.environ['GPT_API_KEY']
+    SBER_API_KEY = os.environ['SBER_API_KEY']
+    print('SBER_API_KEY', SBER_API_KEY)
 except Exception as e:
-    raise VarNotFoundException('GPT_API_KEY')
+    raise VarNotFoundException('SBER_API_KEY')
 
 FRAMERATE = 16000
 

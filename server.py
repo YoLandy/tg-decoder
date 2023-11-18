@@ -8,7 +8,7 @@ from src.scheduler.scheduler import Scheduler
 from src.whisper_.whisp import Whisper
 
 import logging
-logging.basicConfig(level=logging.INFO, filename="py_log.log",filemode="w")
+logging.basicConfig(level=logging.INFO, filename="py_log.log",filemode="a")
 
 model = Whisper()
 schedule = Scheduler(model)
