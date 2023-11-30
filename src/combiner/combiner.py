@@ -11,6 +11,10 @@ class Combiner():
 
     def prepare_dict(self):
         for text_seg, text in self.text:
+            start = self.format_time(text_seg[0])  # added
+            stop = self.format_time(text_seg[1])  # added
+            text = f'{start} - {stop}: '  # added 
+            text += '\n'  # added
             max_cross = 0
             argmax = 0
             for i, [diar_seg, _] in enumerate(self.diar):
